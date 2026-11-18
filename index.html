@@ -53,6 +53,9 @@ pre{overflow-x:auto;margin:0;background:#060405;border:1px solid var(--line);bor
 .panel .head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
 .req{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:14px;color:var(--mute)}
 .req code{color:var(--rose)}
+.fld{display:grid;gap:6px;font-size:14px;color:var(--mute)}
+.fld input{font:16px Inter,sans-serif;min-height:44px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:#060405;color:var(--ink);width:100%}
+.fld input::placeholder{color:#7d6168}
 .pg{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;margin-top:18px}
 textarea{width:100%;min-height:340px;resize:vertical;background:#060405;color:#f4e6ea;border:1px solid var(--line);border-radius:12px;padding:14px;font:14px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
 .pv{background:#fff;border-radius:12px;min-height:220px;padding:20px;display:grid;place-items:center}
@@ -96,6 +99,7 @@ footer{border-top:1px solid var(--line);color:var(--mute);font-size:14px}footer 
   <div class="pg">
     <div>
       <textarea id="ta" spellcheck="false" aria-label="HTML para testar"></textarea>
+      <label class="fld" for="nmPg" style="margin-top:12px">Nome da medida <input id="nmPg" type="text" placeholder="Minha Medida HTML" autocomplete="off"></label>
       <div class="row"><button class="btn pri" id="toDax">Converter em medida DAX</button><button class="btn" id="clr">Limpar</button></div>
     </div>
     <div>
@@ -140,6 +144,7 @@ footer{border-top:1px solid var(--line);color:var(--mute);font-size:14px}footer 
   <div class="panel">
     <div class="head"><div><h2 id="pt" style="margin:0"></h2><p class="tag" id="pc" style="margin:6px 0 0"></p></div><button class="btn" id="close" aria-label="Fechar">Fechar</button></div>
     <div class="req" id="preq"></div>
+    <label class="fld" for="nm">Nome da medida <input id="nm" type="text" autocomplete="off"></label>
     <div class="row" style="margin:0"><button class="btn pri" id="cp">Copiar DAX</button><button class="btn" id="try">Abrir no playground</button></div>
     <pre id="pcode"></pre>
   </div>
@@ -161,7 +166,12 @@ function renderAll(){const d=dados();$('sv').textContent=$('s').value+'%';T.forE
 $('s').addEventListener('input',renderAll);
 $('chips').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;filtro=b.dataset.c;document.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed',x===b));document.querySelectorAll('.card').forEach(c=>c.hidden=!(filtro=='Todos'||c.dataset.cat==filtro))});
 
-function abrir(id){atual=T.find(t=>t.id==id);$('pt').textContent=atual.nome;$('pc').textContent=atual.desc;$('preq').innerHTML='<b style="color:var(--ink)">Troque pelos nomes do seu modelo:</b> '+atual.req;$('pcode').textContent=atual.dax;$('shade').classList.add('on');$('close').focus()}
+function abrir(id){atual=T.find(t=>t.id==id);$('pt').textContent=atual.nome;$('pc').textContent=atual.desc;$('preq').innerHTML='<b style="color:var(--ink)">Troque pelos nomes do seu modelo:</b> '+atual.req;$('nm').value='';$('nm').placeholder=nomePadrao(atual);atualizaDax();$('shade').classList.add('on');$('nm').focus()}
+const limpaNome=s=>s.replace(/[\[\]"'=]/g,'').replace(/\s+/g,' ').trim();
+const nomePadrao=t=>t.dax.split('=')[0].trim();
+function daxCom(t,nome){const n=limpaNome(nome)||nomePadrao(t);return t.dax.replace(/^[^\n=]+=/,n+' =')}
+function atualizaDax(){if(atual)$('pcode').textContent=daxCom(atual,$('nm').value)}
+$('nm').addEventListener('input',atualizaDax);
 function fechar(){$('shade').classList.remove('on')}
 function testar(id){const t=T.find(x=>x.id==id);$('ta').value=t.html(dados());check();fechar();$('playground').scrollIntoView({behavior:'smooth'})}
 $('grid').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.dax)abrir(b.dataset.dax);if(b.dataset.try)testar(b.dataset.try)});
@@ -171,7 +181,7 @@ document.addEventListener('keydown',e=>{if(e.key=='Escape')fechar()});
 $('try').addEventListener('click',()=>atual&&testar(atual.id));
 
 async function copiar(txt,btn){const o=btn.textContent;try{await navigator.clipboard.writeText(txt);btn.textContent='Copiado'}catch(err){const r=document.createRange();r.selectNodeContents(btn.closest('.panel,#daxOut').querySelector('pre'));const s=getSelection();s.removeAllRanges();s.addRange(r);btn.textContent='Selecionado, use Ctrl+C'}setTimeout(()=>btn.textContent=o,1800)}
-$('cp').addEventListener('click',e=>copiar(atual.dax,e.currentTarget));
+$('cp').addEventListener('click',e=>copiar($('pcode').textContent,e.currentTarget));
 $('cpOut').addEventListener('click',e=>copiar($('outPre').textContent,e.currentTarget));
 
 const REGRAS=[
@@ -190,7 +200,9 @@ function limpar(h){const doc=new DOMParser().parseFromString('<body>'+h,'text/ht
 function check(){const h=$('ta').value;paint($('pv'),h.trim()?limpar(h):"<p style='font:14px Segoe UI,sans-serif;color:#605e5c'>A prévia aparece aqui.</p>");const achados=REGRAS.filter(r=>r[0].test(h));$('checks').innerHTML=h.trim()?(achados.length?achados.map(r=>`<li class="${r[1]}">${r[1]=='erro'?'Vai quebrar':'Atenção'}: ${r[2].replace(/</g,'&lt;')}</li>`).join(''):'<li class="ok">Nada que o Secure bloqueie foi encontrado.</li>'):''}
 $('ta').addEventListener('input',check);
 $('clr').addEventListener('click',()=>{$('ta').value='';$('daxOut').hidden=true;check();$('ta').focus()});
-$('toDax').addEventListener('click',()=>{const h=$('ta').value.trim();if(!h)return;const partes=h.replace(/>\s*</g,'>\n<').split('\n').map(l=>l.trim()).filter(Boolean).map(l=>'"'+l.replace(/"/g,'""')+'"');$('outPre').textContent='Minha Medida HTML =\n'+partes.join(' &\n');$('daxOut').hidden=false});
+function gerarDax(){const h=$('ta').value.trim();if(!h){$('daxOut').hidden=true;return}const partes=h.replace(/>\s*</g,'>\n<').split('\n').map(l=>l.trim()).filter(Boolean).map(l=>'"'+l.replace(/"/g,'""')+'"');$('outPre').textContent=(limpaNome($('nmPg').value)||'Minha Medida HTML')+' =\n'+partes.join(' &\n');$('daxOut').hidden=false}
+$('toDax').addEventListener('click',gerarDax);
+$('nmPg').addEventListener('input',()=>{if(!$('daxOut').hidden)gerarDax()});
 
 $('ta').value=T[0].html(dados());
 renderAll();check();
