@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Galeria HTML Content Secure</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* VOICE: ferramenta de trabalho, sóbria, como uma adega bem iluminada.
+   IDEA: bancada de relatório Power BI: telas brancas sobre fundo preto.
+   PICTURE: a própria galeria de visuais renderizados ao vivo é a imagem.
+   COLOUR and TYPE: preto, vinho profundo, vinho claro de destaque; Inter Tight 300 + Inter.
+   LAYOUT: título curto, simulador e filtros, grade de telas, playground, dicas, crédito. */
+:root{color-scheme:dark;--bg:#0a0708;--panel:#140d10;--panel2:#1d1216;--line:#33191f;--ink:#f7f0f2;--mute:#c4aab1;--rose:#e0607a;--wine:#7a1530;--dusk:#9a6b77}
+:root[data-theme=light],:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:radial-gradient(1100px 520px at 85% -120px,#4a0d1f 0%,#22070f 45%,transparent 75%) no-repeat,var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif;overflow-x:clip}
+a{color:var(--rose)}
+.band{padding:clamp(28px,4vw,64px) max(5vw,16px)}
+.wrap{max-width:1240px;margin:0 auto}
+h1,h2{font-family:"Inter Tight",Inter,sans-serif;font-weight:300;line-height:1.05;text-wrap:balance;margin:0}
+h1{font-size:clamp(32px,5vw,52px)}
+h2{font-size:clamp(26px,3.4vw,38px);margin-bottom:12px}
+h3{font-size:17px;font-weight:600;margin:0}
+.lede{color:var(--mute);max-width:68ch;margin:14px 0 0}
+.top{padding-bottom:20px}
+.bar{display:flex;flex-wrap:wrap;gap:14px 28px;align-items:center;justify-content:space-between;margin-top:26px;padding:14px 18px;background:var(--panel);border:1px solid var(--line);border-radius:14px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:500 14px Inter,sans-serif;color:var(--mute);background:transparent;border:1px solid var(--line);border-radius:99px;padding:0 14px;min-height:40px;cursor:pointer}
+.chip[aria-pressed=true]{background:var(--wine);border-color:var(--wine);color:#fff}
+.sim{display:flex;align-items:center;gap:12px;flex-wrap:wrap;color:var(--mute);font-size:14px}
+.sim b{color:var(--ink);font-variant-numeric:tabular-nums;min-width:4ch;display:inline-block;text-align:right}
+input[type=range]{accent-color:var(--rose);width:min(220px,60vw);height:44px}
+button:focus-visible,a:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px solid var(--rose);outline-offset:2px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:18px;margin-top:22px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
+.card{transition:border-color .2s}.card:hover{border-color:#5a1a2b}
+.canvas{background:#fff;min-height:190px;display:grid;place-items:center;padding:20px;border-bottom:1px solid var(--line)}
+.canvas>div{width:100%;display:grid;place-items:center}
+.meta{padding:16px 18px 18px;display:flex;flex-direction:column;gap:8px;flex:1}
+.meta p{margin:0;color:var(--mute);font-size:14px}
+.tag{font-size:13px;color:var(--dusk)}
+.acts{display:flex;gap:8px;margin-top:auto;padding-top:6px}
+.btn{font:500 14px Inter,sans-serif;min-height:44px;padding:0 16px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--ink);cursor:pointer}
+.btn.pri{background:var(--wine);border-color:#9b2343;color:#fff}
+.btn:hover{filter:brightness(1.12)}
+.note{font-size:13px;color:var(--dusk);margin-top:14px}
+pre{overflow-x:auto;margin:0;background:#060405;border:1px solid var(--line);border-radius:12px;padding:16px;font:13px/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#f4e6ea;white-space:pre}
+.shade{position:fixed;inset:0;background:#000000cc;display:none;z-index:10}
+.shade.on{display:block}
+.panel{position:absolute;top:0;right:0;bottom:0;width:min(760px,100%);background:var(--bg);border-left:1px solid var(--line);padding:24px max(4vw,16px);overflow-y:auto;display:flex;flex-direction:column;gap:14px}
+.panel .head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.req{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:14px;color:var(--mute)}
+.req code{color:var(--rose)}
+.pg{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;margin-top:18px}
+textarea{width:100%;min-height:340px;resize:vertical;background:#060405;color:#f4e6ea;border:1px solid var(--line);border-radius:12px;padding:14px;font:14px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.pv{background:#fff;border-radius:12px;min-height:220px;padding:20px;display:grid;place-items:center}
+.pv>div{width:100%;display:grid;place-items:center}
+.checks{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:8px;font-size:14px}
+.checks li{padding:10px 12px;border-radius:10px;background:var(--panel);border:1px solid var(--line)}
+.checks .erro{border-color:#ff6b81;color:#ffd0d8}
+.checks .aviso{border-color:#e0a84f;color:#ffe6bd}
+.checks .ok{border-color:#4fbf8a;color:#c8f3dd}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.tips{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:16px;margin-top:18px}
+.tip{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.tip p{margin:6px 0 0;color:var(--mute);font-size:15px}
+.tip code,.lede code{color:var(--rose);font-size:14px}
+.links{display:grid;gap:10px;margin-top:16px;padding:0;list-style:none}
+.links li{color:var(--mute)}
+.by{color:var(--mute);font-size:15px;margin:10px 0 0}.by b{color:var(--ink);font-weight:500}
+footer{border-top:1px solid var(--line);color:var(--mute);font-size:14px}footer .wrap{display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between}footer b{color:var(--ink);font-weight:500}
+.links a{font-weight:600}
+@media(max-width:900px){.pg{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:600px){.bar{padding:12px}.acts .btn{flex:1}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="band top"><div class="wrap">
+  <h1>Galeria HTML Content Secure</h1>
+  <p class="by">Montado por <b>João Rossini</b></p>
+  <p class="lede">12 medidas DAX prontas para o visual certificado (o antigo HTML Content lite), cada uma com prévia ao vivo. Todas seguem as regras dessa edição: sem script e sem nada carregado de fora, só <code>&lt;style&gt;</code>, CSS inline e SVG.</p>
+  <div class="bar">
+    <div class="chips" id="chips"></div>
+    <label class="sim" for="s">Simular atingimento da meta <input type="range" id="s" min="40" max="130" value="92"> <b id="sv">92%</b></label>
+  </div>
+  <div class="grid" id="grid"></div>
+  <p class="note">As prévias usam dados de exemplo. No Power BI, o visual mostra o que a medida devolver.</p>
+</div></header>
+
+<section class="band" id="playground"><div class="wrap">
+  <h2>Playground</h2>
+  <p class="lede">Cole o HTML gerado pela sua medida (ou abra um template com "Testar"). A prévia remove o que o Secure removeria, e a lista aponta o que deve quebrar. Depois converta o HTML numa medida DAX pronta para colar.</p>
+  <div class="pg">
+    <div>
+      <textarea id="ta" spellcheck="false" aria-label="HTML para testar"></textarea>
+      <div class="row"><button class="btn pri" id="toDax">Converter em medida DAX</button><button class="btn" id="clr">Limpar</button></div>
+    </div>
+    <div>
+      <div class="pv"><div id="pv"></div></div>
+      <ul class="checks" id="checks"></ul>
+    </div>
+  </div>
+  <div id="daxOut" hidden style="margin-top:18px">
+    <div class="row" style="justify-content:space-between;align-items:center;margin:0 0 10px"><h3>Medida gerada</h3><button class="btn" id="cpOut">Copiar</button></div>
+    <pre id="outPre"></pre>
+  </div>
+  <p class="note">A verificação é aproximada e segue a documentação de sanitização do visual. Ela não substitui um teste no próprio Power BI.</p>
+</div></section>
+
+<section class="band"><div class="wrap">
+  <h2>Regras que evitam dor de cabeça</h2>
+  <div class="tips">
+    <div class="tip"><h3>Número no CSS sempre com ponto</h3><p>Num modelo pt-BR, <code>FORMAT(0.455,"0.0")</code> devolve "45,5" e quebra o <code>width</code>. Use <code>FORMAT(x,"0.0","en-US")</code> em tudo que for parar no CSS ou no SVG.</p></div>
+    <div class="tip"><h3>Aspas simples dentro do HTML</h3><p>A string DAX usa aspas duplas. Escreva os atributos com aspas simples (<code>style='...'</code>) e não vai precisar escapar nada.</p></div>
+    <div class="tip"><h3>Nada externo</h3><p>Fontes da web, <code>@import</code>, <code>@font-face</code> e imagens por URL são bloqueados. Use fontes do sistema (Segoe UI) e imagens como <code>data:image/png;base64,...</code>.</p></div>
+    <div class="tip"><h3>Animação permitida</h3><p><code>@keyframes</code> funciona. Em SVG, <code>&lt;animate&gt;</code> funciona em opacity, transform, fill e stroke (a partir da versão 1.6.1).</p></div>
+    <div class="tip"><h3>Escape textos do modelo</h3><p>Se um nome de categoria pode ter <code>&lt;</code> ou <code>&amp;</code>, envolva-o em <code>SUBSTITUTE(SUBSTITUTE(txt,"&amp;","&amp;amp;"),"&lt;","&amp;lt;")</code>.</p></div>
+    <div class="tip"><h3>Listas com CONCATENATEX</h3><p>Ranking, tabela e sparkline montam uma linha por item com <code>CONCATENATEX</code> sobre um <code>TOPN</code> ou <code>ADDCOLUMNS</code>. A ordem vai nos dois últimos argumentos.</p></div>
+  </div>
+</div></section>
+
+<section class="band"><div class="wrap">
+  <h2>Onde achar mais</h2>
+  <ul class="links">
+    <li><a href="https://html-content.com/docs/sanitization">html-content.com: Sanitization</a>, a lista do que a edição Secure filtra (CSS, URLs, atributos, animações).</li>
+    <li><a href="https://html-content.com/docs/accepted-tags">html-content.com: Accepted Tags</a>, as tags HTML e SVG aceitas.</li>
+    <li><a href="https://html-content.com/docs/visual-editions">html-content.com: Compare editions</a>, as diferenças entre a regular e a Secure.</li>
+    <li><a href="https://github.com/SteCiu01/Power-BI-HTML-Templates">SteCiu01/Power-BI-HTML-Templates</a>: .pbix com cards de KPI e cascata. Ele foi feito para a edição regular, então teste antes de usar no Secure.</li>
+    <li><a href="https://www.phdata.io/blog/beyond-the-standard-card-building-dynamic-scalable-html-dashboards-in-power-bi/">phData: cards HTML dinâmicos</a>, com uma tabela de configuração para gerar vários cards a partir de uma só medida.</li>
+  </ul>
+</div></section>
+
+<footer class="band" style="padding-block:24px"><div class="wrap"><span>Montado por <b>João Rossini</b></span><span>Templates para o visual HTML Content Secure (ex-lite) de Daniel Marsh-Patrick.</span></div></footer>
+
+<div class="shade" id="shade" role="dialog" aria-modal="true" aria-labelledby="pt">
+  <div class="panel">
+    <div class="head"><div><h2 id="pt" style="margin:0"></h2><p class="tag" id="pc" style="margin:6px 0 0"></p></div><button class="btn" id="close" aria-label="Fechar">Fechar</button></div>
+    <div class="req" id="preq"></div>
+    <div class="row" style="margin:0"><button class="btn pri" id="cp">Copiar DAX</button><button class="btn" id="try">Abrir no playground</button></div>
+    <pre id="pcode"></pre>
+  </div>
+</div>
+
+<script src="templates.js"></script>
+<script>
+{
+const $=id=>document.getElementById(id);
+const CATS_F=['Todos','KPIs','Barras','SVG','Listas','Status'];
+let filtro='Todos',atual=null;
+const dados=()=>{const s=$('s').value/100,meta=1250000,vendas=meta*s,aa=meta*.95;return{s,meta,vendas,aa,varp:vendas/aa-1}};
+const paint=(el,html)=>{const r=el.shadowRoot||el.attachShadow({mode:'open'});r.innerHTML=html};
+
+$('chips').innerHTML=CATS_F.map(c=>`<button class="chip" aria-pressed="${c==filtro}" data-c="${c}">${c}</button>`).join('');
+$('grid').innerHTML=T.map(t=>`<article class="card" data-cat="${t.cat}"><div class="canvas"><div id="v-${t.id}"></div></div><div class="meta"><h3>${t.nome}</h3><p>${t.desc}</p><span class="tag">${t.cat}</span><div class="acts"><button class="btn pri" data-dax="${t.id}">Ver DAX</button><button class="btn" data-try="${t.id}">Testar</button></div></div></article>`).join('');
+
+function renderAll(){const d=dados();$('sv').textContent=$('s').value+'%';T.forEach(t=>paint($('v-'+t.id),t.html(d)))}
+$('s').addEventListener('input',renderAll);
+$('chips').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;filtro=b.dataset.c;document.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed',x===b));document.querySelectorAll('.card').forEach(c=>c.hidden=!(filtro=='Todos'||c.dataset.cat==filtro))});
+
+function abrir(id){atual=T.find(t=>t.id==id);$('pt').textContent=atual.nome;$('pc').textContent=atual.desc;$('preq').innerHTML='<b style="color:var(--ink)">Troque pelos nomes do seu modelo:</b> '+atual.req;$('pcode').textContent=atual.dax;$('shade').classList.add('on');$('close').focus()}
+function fechar(){$('shade').classList.remove('on')}
+function testar(id){const t=T.find(x=>x.id==id);$('ta').value=t.html(dados());check();fechar();$('playground').scrollIntoView({behavior:'smooth'})}
+$('grid').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.dax)abrir(b.dataset.dax);if(b.dataset.try)testar(b.dataset.try)});
+$('close').addEventListener('click',fechar);
+$('shade').addEventListener('click',e=>{if(e.target.id=='shade')fechar()});
+document.addEventListener('keydown',e=>{if(e.key=='Escape')fechar()});
+$('try').addEventListener('click',()=>atual&&testar(atual.id));
+
+async function copiar(txt,btn){const o=btn.textContent;try{await navigator.clipboard.writeText(txt);btn.textContent='Copiado'}catch(err){const r=document.createRange();r.selectNodeContents(btn.closest('.panel,#daxOut').querySelector('pre'));const s=getSelection();s.removeAllRanges();s.addRange(r);btn.textContent='Selecionado, use Ctrl+C'}setTimeout(()=>btn.textContent=o,1800)}
+$('cp').addEventListener('click',e=>copiar(atual.dax,e.currentTarget));
+$('cpOut').addEventListener('click',e=>copiar($('outPre').textContent,e.currentTarget));
+
+const REGRAS=[
+[/<\s*script/i,'erro','<script> é removido: scripts não rodam no Secure.'],
+[/<\s*(iframe|object|embed|link|meta|form)\b/i,'erro','Tag bloqueada (iframe, object, embed, link, meta ou form). Ela some junto com o conteúdo.'],
+[/<\s*(use|foreignObject)\b/i,'erro','<use> e <foreignObject> não são aceitos no SVG.'],
+[/\son[a-z]+\s*=/i,'erro','Atributo on* (onclick, onload...) faz o elemento inteiro ser removido.'],
+[/url\(\s*['"]?https?:/i,'erro','url() apontando para fora é bloqueado. Use data: URI.'],
+[/@import|@font-face/i,'erro','@import e @font-face são bloqueados. Use fontes do sistema, como Segoe UI.'],
+[/\ssrc\s*=\s*['"]?https?:/i,'erro','Imagem remota não carrega. Converta para data:image/...;base64.'],
+[/<\s*a\s[^>]*href/i,'aviso','Links <a href> só funcionam com "Allow opening URLs" ligado no visual.'],
+[/:\s*-?\d+,\d+\s*(%|px|em|rem)/,'aviso','Número com vírgula decimal no CSS (ex.: 45,5%). Use FORMAT(x,"0.0","en-US").'],
+[/attributeName\s*=\s*['"](href|xlink:href|src|style|clip-path|mask|filter|cursor)/i,'aviso','Animação SMIL nesse atributo é bloqueada. Use opacity, transform, fill ou stroke.']
+];
+function limpar(h){const doc=new DOMParser().parseFromString('<body>'+h,'text/html');doc.querySelectorAll('script,iframe,object,embed,link,meta,form,use,foreignObject').forEach(e=>e.remove());doc.body.querySelectorAll('*').forEach(e=>{if([...e.attributes].some(a=>/^on/i.test(a.name)))e.remove()});return doc.body.innerHTML}
+function check(){const h=$('ta').value;paint($('pv'),h.trim()?limpar(h):"<p style='font:14px Segoe UI,sans-serif;color:#605e5c'>A prévia aparece aqui.</p>");const achados=REGRAS.filter(r=>r[0].test(h));$('checks').innerHTML=h.trim()?(achados.length?achados.map(r=>`<li class="${r[1]}">${r[1]=='erro'?'Vai quebrar':'Atenção'}: ${r[2].replace(/</g,'&lt;')}</li>`).join(''):'<li class="ok">Nada que o Secure bloqueie foi encontrado.</li>'):''}
+$('ta').addEventListener('input',check);
+$('clr').addEventListener('click',()=>{$('ta').value='';$('daxOut').hidden=true;check();$('ta').focus()});
+$('toDax').addEventListener('click',()=>{const h=$('ta').value.trim();if(!h)return;const partes=h.replace(/>\s*</g,'>\n<').split('\n').map(l=>l.trim()).filter(Boolean).map(l=>'"'+l.replace(/"/g,'""')+'"');$('outPre').textContent='Minha Medida HTML =\n'+partes.join(' &\n');$('daxOut').hidden=false});
+
+$('ta').value=T[0].html(dados());
+renderAll();check();
+}
+</script>
+</body>
+</html>
