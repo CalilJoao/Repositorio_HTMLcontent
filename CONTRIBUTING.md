@@ -49,6 +49,8 @@ Mudam com o simulador da página: `s` (atingimento, 0,4 a 1,3), `meta`, `vendas`
 
 ## Checklist do PR
 
+- [ ] Aumentei o número em `templates.js?v=` no `index.html` (evita que o navegador misture arquivo novo com antigo em cache)
+
 - [ ] A medida não usa nada que o Secure bloqueia (cole o HTML no playground da página para conferir)
 - [ ] Todo número que vai para CSS ou SVG usa `FORMAT(x, "...", "en-US")`
 - [ ] Atributos HTML com aspas simples dentro das strings DAX
