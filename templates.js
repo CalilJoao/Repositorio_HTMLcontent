@@ -331,3 +331,11 @@ RETURN
   "<div style='font-size:13px;color:#605e5c;max-width:110px'>${tx(o.titulo)}</div></div>" &
 "</div>"`}
 ];
+
+// Compatibilidade: completa as opções que faltarem e mantém t.dax como texto (versão padrão).
+// Assim, uma página antiga guardada em cache no navegador continua funcionando com este arquivo.
+T.forEach(t=>{
+  const html=t.html,dax=t.dax,comp=o=>({...OPT_DEF,...(t.def||{}),...(o||{})});
+  t.html=(d,o)=>html(d,comp(o));
+  if(typeof dax=='function'){t.daxFn=o=>dax(comp(o));t.dax=t.daxFn()}
+});

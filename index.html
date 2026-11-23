@@ -180,21 +180,21 @@ footer{border-top:1px solid var(--line);color:var(--mute);font-size:14px}footer 
   </div>
 </div>
 
-<script src="templates.js"></script>
+<script src="templates.js?v=3"></script>
 <script>
 {
 const $=id=>document.getElementById(id);
 const CATS_F=['Todos','KPIs','Barras','SVG','Listas','Status'];
 let filtro='Todos',atual=null,op={};
 const opcoes=t=>({...OPT_DEF,...(t.def||{})});
-const daxStr=(t,o)=>typeof t.dax=='function'?t.dax(o):t.dax;
+const daxStr=(t,o)=>typeof t.daxFn=='function'?t.daxFn(o):typeof t.dax=='function'?t.dax(o):t.dax;
 const dados=()=>{const s=$('s').value/100,meta=1250000,vendas=meta*s,aa=meta*.95;return{s,meta,vendas,aa,varp:vendas/aa-1}};
 const paint=(el,html)=>{const r=el.shadowRoot||el.attachShadow({mode:'open'});r.innerHTML=html};
 
 $('chips').innerHTML=CATS_F.map(c=>`<button class="chip" aria-pressed="${c==filtro}" data-c="${c}">${c}</button>`).join('');
 $('grid').innerHTML=T.map(t=>`<article class="card" data-cat="${t.cat}"><div class="canvas"><div id="v-${t.id}"></div></div><div class="meta"><h3>${t.nome}</h3><p>${t.desc}</p><span class="tag">${t.cat}</span><div class="acts"><button class="btn pri" data-dax="${t.id}">Ver DAX</button><button class="btn" data-try="${t.id}">Testar</button></div></div></article>`).join('');
 
-function renderAll(){const d=dados();$('sv').textContent=$('s').value+'%';T.forEach(t=>paint($('v-'+t.id),t.html(d,opcoes(t))));if(atual&&$('shade').classList.contains('on'))paint($('ppv'),atual.html(d,op))}
+function renderAll(){const d=dados();$('sv').textContent=$('s').value+'%';T.forEach(t=>{try{paint($('v-'+t.id),t.html(d,opcoes(t)))}catch(e){console.error(t.id,e);paint($('v-'+t.id),"<p style='font:13px Segoe UI,sans-serif;color:#a4262c'>Não foi possível desenhar este template.</p>")}});if(atual&&$('shade').classList.contains('on'))paint($('ppv'),atual.html(d,op))}
 $('s').addEventListener('input',renderAll);
 $('chips').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;filtro=b.dataset.c;document.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed',x===b));document.querySelectorAll('.card').forEach(c=>c.hidden=!(filtro=='Todos'||c.dataset.cat==filtro))});
 
