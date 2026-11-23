@@ -53,6 +53,8 @@ pre{overflow-x:auto;margin:0;background:#060405;border:1px solid var(--line);bor
 .shade{position:fixed;inset:0;background:#000000cc;display:none;z-index:10}
 .shade.on{display:block}
 .panel{position:absolute;top:0;right:0;bottom:0;width:min(760px,100%);background:var(--bg);border-left:1px solid var(--line);padding:24px max(4vw,16px);overflow-y:auto;display:flex;flex-direction:column;gap:14px}
+[hidden]{display:none!important}
+.panel>*{flex-shrink:0}
 .panel .head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
 .req{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:14px;color:var(--mute)}
 .req code{color:var(--rose)}
