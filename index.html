@@ -72,6 +72,9 @@ pre{overflow-x:auto;margin:0;background:#060405;border:1px solid var(--line);bor
 .seg button{flex:1;min-height:44px;background:#060405;color:var(--mute);border:0;font:500 14px Inter,sans-serif;cursor:pointer}
 .seg button[aria-checked=true]{background:var(--wine);color:#fff}
 .hint{margin:0;font-size:13px;color:var(--dusk)}
+.pgsim{justify-content:space-between;margin-bottom:4px}
+#pgInfo{margin:0 0 10px}
+#pgInfo code{color:var(--rose)}
 @media(max-width:600px){.cfg{grid-template-columns:minmax(0,1fr)}}
 .pg{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;margin-top:18px}
 textarea{width:100%;min-height:340px;resize:vertical;background:#060405;color:#f4e6ea;border:1px solid var(--line);border-radius:12px;padding:14px;font:14px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
@@ -104,7 +107,7 @@ footer{border-top:1px solid var(--line);color:var(--mute);font-size:14px}footer 
   <p class="lede">12 medidas DAX prontas para o visual certificado (o antigo HTML Content lite), cada uma com prévia ao vivo. Antes de copiar, ajuste título, unidade, abreviação, se maior ou menor é melhor e as faixas de cor. Todas seguem as regras dessa edição: sem script e sem nada carregado de fora, só <code>&lt;style&gt;</code>, CSS inline e SVG.</p>
   <div class="bar">
     <div class="chips" id="chips"></div>
-    <label class="sim" for="s">Simular atingimento da meta <input type="range" id="s" min="40" max="130" value="92"> <b id="sv">92%</b></label>
+    <label class="sim" for="s">Simular atingimento da meta <input type="range" id="s" min="0" max="130" value="92"> <b id="sv">92%</b></label>
   </div>
   <div class="grid" id="grid"></div>
   <p class="note">As prévias usam dados de exemplo. No Power BI, o visual mostra o que a medida devolver.</p>
@@ -120,6 +123,8 @@ footer{border-top:1px solid var(--line);color:var(--mute);font-size:14px}footer 
       <div class="row"><button class="btn pri" id="toDax">Converter em medida DAX</button><button class="btn" id="cpIAPg">Copiar prompt para IA</button><button class="btn" id="clr">Limpar</button></div>
     </div>
     <div>
+      <label class="sim pgsim" for="s2">Simular atingimento da meta <input type="range" id="s2" min="0" max="130" value="92"> <b id="sv2">92%</b></label>
+      <p class="hint" id="pgInfo"></p>
       <div class="pv"><div id="pv"></div></div>
       <ul class="checks" id="checks"></ul>
     </div>
@@ -196,8 +201,14 @@ const paint=(el,html)=>{const r=el.shadowRoot||el.attachShadow({mode:'open'});r.
 $('chips').innerHTML=CATS_F.map(c=>`<button class="chip" aria-pressed="${c==filtro}" data-c="${c}">${c}</button>`).join('');
 $('grid').innerHTML=T.map(t=>`<article class="card" data-cat="${t.cat}"><div class="canvas"><div id="v-${t.id}"></div></div><div class="meta"><h3>${t.nome}</h3><p>${t.desc}</p><span class="tag">${t.cat}</span><div class="acts"><button class="btn pri" data-dax="${t.id}">Ver DAX</button><button class="btn" data-try="${t.id}">Testar</button></div></div></article>`).join('');
 
-function renderAll(){const d=dados();$('sv').textContent=$('s').value+'%';T.forEach(t=>{try{paint($('v-'+t.id),t.html(d,opcoes(t)))}catch(e){console.error(t.id,e);paint($('v-'+t.id),"<p style='font:13px Segoe UI,sans-serif;color:#a4262c'>Não foi possível desenhar este template.</p>")}});if(atual&&$('shade').classList.contains('on'))paint($('ppv'),atual.html(d,op))}
-$('s').addEventListener('input',renderAll);
+function renderAll(){const d=dados();$('sv').textContent=$('sv2').textContent=$('s').value+'%';T.forEach(t=>{try{paint($('v-'+t.id),t.html(d,opcoes(t)))}catch(e){console.error(t.id,e);paint($('v-'+t.id),"<p style='font:13px Segoe UI,sans-serif;color:#a4262c'>Não foi possível desenhar este template.</p>")}});if(atual&&$('shade').classList.contains('on'))paint($('ppv'),atual.html(d,op))}
+let pgSrc=null;
+function pgInfo(){$('pgInfo').innerHTML=pgSrc
+  ?`Simulando o template <b>${hx(pgSrc.t.nome)}</b>. Se você editar o HTML, o simulador passa a mudar só onde houver <code>{{pct}}</code>.`
+  :'Escreva <code>{{pct}}</code> no HTML onde quiser o percentual do simulador, ex.: <code>width:{{pct}}%</code>. Na conversão para DAX ele vira a variável <code>_pct</code>.'}
+function setSim(v){$('s').value=$('s2').value=v;renderAll();if(pgSrc)$('ta').value=pgSrc.t.html(dados(),pgSrc.o);check()}
+$('s').addEventListener('input',e=>setSim(e.target.value));
+$('s2').addEventListener('input',e=>setSim(e.target.value));
 $('chips').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;filtro=b.dataset.c;document.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed',x===b));document.querySelectorAll('.card').forEach(c=>c.hidden=!(filtro=='Todos'||c.dataset.cat==filtro))});
 
 function abrir(id){
@@ -244,7 +255,7 @@ Devolva:
 1. A medida DAX completa, pronta para colar no Power BI.
 2. O HTML que essa medida gera, com valores de exemplo fictícios, para eu testar no playground de ${SITE} antes de levar para o Power BI.`}
 function fechar(){$('shade').classList.remove('on')}
-function testar(id,o){const t=T.find(x=>x.id==id);$('ta').value=t.html(dados(),o||opcoes(t));check();fechar();$('playground').scrollIntoView({behavior:'smooth'})}
+function testar(id,o){const t=T.find(x=>x.id==id);pgSrc={t,o:{...(o||opcoes(t))}};$('ta').value=t.html(dados(),pgSrc.o);pgInfo();check();fechar();$('playground').scrollIntoView({behavior:'smooth'})}
 $('grid').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.dax)abrir(b.dataset.dax);if(b.dataset.try)testar(b.dataset.try)});
 $('close').addEventListener('click',fechar);
 $('shade').addEventListener('click',e=>{if(e.target.id=='shade')fechar()});
@@ -270,14 +281,15 @@ const REGRAS=[
 [/attributeName\s*=\s*['"](href|xlink:href|src|style|clip-path|mask|filter|cursor)/i,'aviso','Animação SMIL nesse atributo é bloqueada. Use opacity, transform, fill ou stroke.']
 ];
 function limpar(h){const doc=new DOMParser().parseFromString('<body>'+h,'text/html');doc.querySelectorAll('script,iframe,object,embed,link,meta,form,use,foreignObject').forEach(e=>e.remove());doc.body.querySelectorAll('*').forEach(e=>{if([...e.attributes].some(a=>/^on/i.test(a.name)))e.remove()});return doc.body.innerHTML}
-function check(){const h=$('ta').value;paint($('pv'),h.trim()?limpar(h):"<p style='font:14px Segoe UI,sans-serif;color:#605e5c'>A prévia aparece aqui.</p>");const achados=REGRAS.filter(r=>r[0].test(h));$('checks').innerHTML=h.trim()?(achados.length?achados.map(r=>`<li class="${r[1]}">${r[1]=='erro'?'Vai quebrar':'Atenção'}: ${r[2].replace(/</g,'&lt;')}</li>`).join(''):'<li class="ok">Nada que o Secure bloqueie foi encontrado.</li>'):''}
-$('ta').addEventListener('input',check);
-$('clr').addEventListener('click',()=>{$('ta').value='';$('daxOut').hidden=true;check();$('ta').focus()});
-function gerarDax(){const h=$('ta').value.trim();if(!h){$('daxOut').hidden=true;return}const partes=h.replace(/>\s*</g,'>\n<').split('\n').map(l=>l.trim()).filter(Boolean).map(l=>'"'+l.replace(/"/g,'""')+'"');$('outPre').textContent=(limpaNome($('nmPg').value)||'Minha Medida HTML')+' =\n'+partes.join(' &\n');$('daxOut').hidden=false}
+const PCT=/\{\{\s*pct\s*\}\}/g;
+function check(){const h=$('ta').value;paint($('pv'),h.trim()?limpar(h.replace(PCT,$('s').value)):"<p style='font:14px Segoe UI,sans-serif;color:#605e5c'>A prévia aparece aqui.</p>");const achados=REGRAS.filter(r=>r[0].test(h));$('checks').innerHTML=h.trim()?(achados.length?achados.map(r=>`<li class="${r[1]}">${r[1]=='erro'?'Vai quebrar':'Atenção'}: ${r[2].replace(/</g,'&lt;')}</li>`).join(''):'<li class="ok">Nada que o Secure bloqueie foi encontrado.</li>'):''}
+$('ta').addEventListener('input',()=>{if(pgSrc){pgSrc=null;pgInfo()}check()});
+$('clr').addEventListener('click',()=>{pgSrc=null;pgInfo();$('ta').value='';$('daxOut').hidden=true;check();$('ta').focus()});
+function gerarDax(){const h=$('ta').value.trim();if(!h){$('daxOut').hidden=true;return}const partes=h.replace(/>\s*</g,'>\n<').split('\n').map(l=>l.trim()).filter(Boolean).map(l=>'"'+l.replace(/"/g,'""')+'"');const comPct=PCT.test(h);PCT.lastIndex=0;const corpo=partes.join(' &\n').replace(PCT,'" & FORMAT ( _pct * 100, "0", "en-US" ) & "');$('outPre').textContent=(limpaNome($('nmPg').value)||'Minha Medida HTML')+' =\n'+(comPct?'VAR _pct = [Sua Medida de %]   -- troque pela sua medida (0 a 1, ex.: 0,92)\nRETURN\n':'')+corpo;$('daxOut').hidden=false}
 $('toDax').addEventListener('click',gerarDax);
 $('nmPg').addEventListener('input',()=>{if(!$('daxOut').hidden)gerarDax()});
 
-$('ta').value=T[0].html(dados(),opcoes(T[0]));
+pgSrc={t:T[0],o:opcoes(T[0])};$('ta').value=T[0].html(dados(),pgSrc.o);pgInfo();
 renderAll();check();
 }
 </script>
