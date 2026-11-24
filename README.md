@@ -10,11 +10,14 @@ Quer um template novo? Abra uma [issue de pedido](../../issues/new?template=novo
 
 ## Como usar
 
-1. Abra a página, escolha um template e clique em **Usar template** (ou na prévia dele).
-2. Ajuste o que precisar: nome da medida, título, unidade, abreviação, se maior ou menor é melhor e as faixas de cor. A prévia e o DAX mudam na hora.
-3. Copie a medida e troque `[Vendas]`, `[Meta]` e os outros nomes pelos do seu modelo.
-   Quer outra variação? Use **Copiar prompt para IA**: o texto já leva as regras do visual e a medida atual.
-4. Coloque a medida no campo *Values* do visual HTML Content Secure.
+1. Abra a página e clique em **Usar template** (ou na prévia dele). O editor abre em tela cheia.
+2. À esquerda, ajuste nome da medida, título, unidade, abreviação, se maior ou menor é melhor e as faixas de cor. A prévia e a medida DAX mudam na hora.
+3. Quer mexer à mão? Edite na aba **HTML (editável)**: a medida DAX passa a ser gerada do seu HTML. **Desfazer e voltar ao template** retorna às opções.
+4. Clique em **Copiar DAX**, troque `[Vendas]`, `[Meta]` e os outros nomes pelos do seu modelo e coloque a medida no campo *Values* do visual HTML Content Secure.
+
+Tem um HTML seu ou feito com IA? Use **Abrir editor livre** (ou o link `#editor`). Escreva `{{pct}}` onde quiser o percentual do simulador.
+Quer outra variação? **Copiar prompt para IA** leva as regras do visual e a medida atual.
+Cada template tem link direto, ex.: `.../Repositorio_HTMLcontent/#gauge`.
 
 ## Estrutura
 
