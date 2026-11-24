@@ -10,7 +10,7 @@ Quer um template novo? Abra uma [issue de pedido](../../issues/new?template=novo
 
 ## Como usar
 
-1. Abra a página, escolha um template e clique em **Ver DAX**.
+1. Abra a página, escolha um template e clique em **Usar template** (ou na prévia dele).
 2. Ajuste o que precisar: nome da medida, título, unidade, abreviação, se maior ou menor é melhor e as faixas de cor. A prévia e o DAX mudam na hora.
 3. Copie a medida e troque `[Vendas]`, `[Meta]` e os outros nomes pelos do seu modelo.
    Quer outra variação? Use **Copiar prompt para IA**: o texto já leva as regras do visual e a medida atual.

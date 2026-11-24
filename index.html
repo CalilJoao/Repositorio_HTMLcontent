@@ -39,12 +39,13 @@ button:focus-visible,a:focus-visible,textarea:focus-visible,input:focus-visible{
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:18px;margin-top:22px}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
 .card{transition:border-color .2s}.card:hover{border-color:#5a1a2b}
-.canvas{background:#fff;min-height:190px;display:grid;place-items:center;padding:20px;border-bottom:1px solid var(--line)}
+.canvas{cursor:pointer;background:#fff;min-height:190px;display:grid;place-items:center;padding:20px;border-bottom:1px solid var(--line)}
 .canvas>div{width:100%;display:grid;place-items:center}
 .meta{padding:16px 18px 18px;display:flex;flex-direction:column;gap:8px;flex:1}
 .meta p{margin:0;color:var(--mute);font-size:14px}
 .tag{font-size:13px;color:var(--dusk)}
 .acts{display:flex;gap:8px;margin-top:auto;padding-top:6px}
+.acts .btn{flex:1}
 .btn{font:500 14px Inter,sans-serif;min-height:44px;padding:0 16px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--ink);cursor:pointer}
 .btn.pri{background:var(--wine);border-color:#9b2343;color:#fff}
 .btn:hover{filter:brightness(1.12)}
@@ -115,7 +116,7 @@ footer{border-top:1px solid var(--line);color:var(--mute);font-size:14px}footer 
 
 <section class="band" id="playground"><div class="wrap">
   <h2>Playground</h2>
-  <p class="lede">Cole o HTML gerado pela sua medida (ou abra um template com "Testar"). A prévia remove o que o Secure removeria, e a lista aponta o que deve quebrar. Depois converta o HTML numa medida DAX pronta para colar.</p>
+  <p class="lede">Cole o HTML gerado pela sua medida (ou, dentro de um template, use "Abrir no playground"). A prévia remove o que o Secure removeria, e a lista aponta o que deve quebrar. Depois converta o HTML numa medida DAX pronta para colar.</p>
   <div class="pg">
     <div>
       <textarea id="ta" spellcheck="false" aria-label="HTML para testar"></textarea>
@@ -199,7 +200,7 @@ const dados=()=>{const s=$('s').value/100,meta=1250000,vendas=meta*s,aa=meta*.95
 const paint=(el,html)=>{const r=el.shadowRoot||el.attachShadow({mode:'open'});r.innerHTML=html};
 
 $('chips').innerHTML=CATS_F.map(c=>`<button class="chip" aria-pressed="${c==filtro}" data-c="${c}">${c}</button>`).join('');
-$('grid').innerHTML=T.map(t=>`<article class="card" data-cat="${t.cat}"><div class="canvas"><div id="v-${t.id}"></div></div><div class="meta"><h3>${t.nome}</h3><p>${t.desc}</p><span class="tag">${t.cat}</span><div class="acts"><button class="btn pri" data-dax="${t.id}">Ver DAX</button><button class="btn" data-try="${t.id}">Testar</button></div></div></article>`).join('');
+$('grid').innerHTML=T.map(t=>`<article class="card" data-cat="${t.cat}"><div class="canvas" data-dax="${t.id}" title="Abrir ${t.nome}"><div id="v-${t.id}"></div></div><div class="meta"><h3>${t.nome}</h3><p>${t.desc}</p><span class="tag">${t.cat}</span><div class="acts"><button class="btn pri" data-dax="${t.id}">Usar template</button></div></div></article>`).join('');
 
 function renderAll(){const d=dados();$('sv').textContent=$('sv2').textContent=$('s').value+'%';T.forEach(t=>{try{paint($('v-'+t.id),t.html(d,opcoes(t)))}catch(e){console.error(t.id,e);paint($('v-'+t.id),"<p style='font:13px Segoe UI,sans-serif;color:#a4262c'>Não foi possível desenhar este template.</p>")}});if(atual&&$('shade').classList.contains('on'))paint($('ppv'),atual.html(d,op))}
 let pgSrc=null;
@@ -256,7 +257,7 @@ Devolva:
 2. O HTML que essa medida gera, com valores de exemplo fictícios, para eu testar no playground de ${SITE} antes de levar para o Power BI.`}
 function fechar(){$('shade').classList.remove('on')}
 function testar(id,o){const t=T.find(x=>x.id==id);pgSrc={t,o:{...(o||opcoes(t))}};$('ta').value=t.html(dados(),pgSrc.o);pgInfo();check();fechar();$('playground').scrollIntoView({behavior:'smooth'})}
-$('grid').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.dax)abrir(b.dataset.dax);if(b.dataset.try)testar(b.dataset.try)});
+$('grid').addEventListener('click',e=>{const b=e.target.closest('[data-dax]');if(b)abrir(b.dataset.dax)});
 $('close').addEventListener('click',fechar);
 $('shade').addEventListener('click',e=>{if(e.target.id=='shade')fechar()});
 document.addEventListener('keydown',e=>{if(e.key=='Escape')fechar()});
