@@ -6,7 +6,7 @@ Cada template é um objeto no array `T` em `templates.js`. Para incluir um novo,
 {
   id: 'meu-template',          // único, sem espaços
   nome: 'Nome que aparece no card',
-  cat: 'KPIs',                 // KPIs | Barras | SVG | Listas | Status
+  cat: 'KPIs',                 // KPIs | Barras | SVG | Listas | Status | Tempo
   desc: 'Uma frase dizendo o que ele mostra.',
   req: '<code>[Vendas]</code>, <code>[Meta]</code>',   // o que trocar no modelo
   opts: ['titulo', 'unidade', 'abrev', 'sentido', 'faixas'],  // personalizações que ele aceita
