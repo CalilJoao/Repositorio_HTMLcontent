@@ -491,25 +491,25 @@ RETURN
 
 {id:'marcos',nome:'Linha do tempo de marcos',cat:'Tempo',desc:'Marcos de um projeto com data e status: concluído, atrasado ou previsto.',req:'Tabela <code>\'Marcos\'</code> com as colunas <code>[Data]</code>, <code>[Marco]</code> e <code>[Status]</code> ("Concluído", "Atrasado" ou "Previsto").',
 opts:['titulo'],def:{titulo:'Marcos do projeto'},
-html:(d,o)=>{const M=[['15/01/2026','Kickoff','Concluído'],['10/03/2026','Projeto executivo','Concluído'],['05/06/2026','Compra de materiais',d.s>=1?'Concluído':'Atrasado'],['20/09/2026','Execução da obra','Previsto'],['30/11/2026','Entrega','Previsto']],C={'Concluído':'#0f9d58','Atrasado':'#d93025','Previsto':'#a19f9d'};return `<div style='font-family:Segoe UI,sans-serif;color:#252423;width:100%;max-width:300px'>${o.titulo?`<div style='font-weight:600;font-size:14px;margin-bottom:10px'>${hx(o.titulo)}</div>`:''}${M.map((m,i)=>`<div style='display:flex;gap:12px'><div style='display:flex;flex-direction:column;align-items:center'><div style='width:12px;height:12px;border-radius:50%;background:${C[m[2]]};margin-top:4px;flex:none'></div>${i<M.length-1?`<div style='width:2px;flex:1;background:#e1dfdd'></div>`:''}</div><div style='padding-bottom:12px'><div style='font-size:12px;color:#605e5c'>${m[0]}</div><div style='font-size:14px;font-weight:600'>${m[1]}</div><div style='font-size:11px;font-weight:600;color:${C[m[2]]}'>${m[2]}</div></div></div>`).join('')}</div>`},
+html:(d,o)=>{const M=[['15/01/2026','Kickoff','Concluído'],['10/03/2026','Projeto executivo','Concluído'],['05/06/2026','Compra de materiais',d.s>=1?'Concluído':'Atrasado'],['20/09/2026','Execução da obra','Previsto'],['30/11/2026','Entrega','Previsto']],C={'Concluído':'#0f9d58','Atrasado':'#d93025','Previsto':'#a19f9d'};return `<div style='font-family:Segoe UI,sans-serif;color:#252423;width:100%;max-width:260px'>${o.titulo?`<div style='font-weight:600;font-size:13px;margin-bottom:6px'>${hx(o.titulo)}</div>`:''}${M.map((m,i)=>`<div style='display:flex;gap:8px'><div style='display:flex;flex-direction:column;align-items:center'><div style='width:8px;height:8px;border-radius:50%;background:${C[m[2]]};margin-top:5px;flex:none'></div>${i<M.length-1?`<div style='width:2px;flex:1;background:#e1dfdd'></div>`:''}</div><div style='padding-bottom:6px;line-height:1.3'><div style='font-size:12px;font-weight:600'>${m[1]}</div><div style='font-size:11px;color:#605e5c'>${m[0]} · <span style='font-weight:600;color:${C[m[2]]}'>${m[2]}</span></div></div></div>`).join('')}</div>`},
 dax:o=>`HTML Marcos =
 VAR _ultima = MAX ( 'Marcos'[Data] )
 RETURN
 "<div style='font-family:Segoe UI,sans-serif;color:#252423'>" &${o.titulo?`
-  "<div style='font-weight:600;font-size:14px;margin-bottom:10px'>${tx(o.titulo)}</div>" &`:''}
+  "<div style='font-weight:600;font-size:13px;margin-bottom:6px'>${tx(o.titulo)}</div>" &`:''}
 CONCATENATEX (
     'Marcos',
     VAR _cor = SWITCH ( 'Marcos'[Status], "Concluído", "#0f9d58", "Atrasado", "#d93025", "#a19f9d" )
     RETURN
-    "<div style='display:flex;gap:12px'>" &
+    "<div style='display:flex;gap:8px'>" &
       "<div style='display:flex;flex-direction:column;align-items:center'>" &
-        "<div style='width:12px;height:12px;border-radius:50%;background:" & _cor & ";margin-top:4px;flex:none'></div>" &
+        "<div style='width:8px;height:8px;border-radius:50%;background:" & _cor & ";margin-top:5px;flex:none'></div>" &
         IF ( 'Marcos'[Data] < _ultima, "<div style='width:2px;flex:1;background:#e1dfdd'></div>" ) &
       "</div>" &
-      "<div style='padding-bottom:12px'>" &
-        "<div style='font-size:12px;color:#605e5c'>" & FORMAT ( 'Marcos'[Data], "dd/mm/yyyy" ) & "</div>" &
-        "<div style='font-size:14px;font-weight:600'>" & 'Marcos'[Marco] & "</div>" &
-        "<div style='font-size:11px;font-weight:600;color:" & _cor & "'>" & 'Marcos'[Status] & "</div>" &
+      "<div style='padding-bottom:6px;line-height:1.3'>" &
+        "<div style='font-size:12px;font-weight:600'>" & 'Marcos'[Marco] & "</div>" &
+        "<div style='font-size:11px;color:#605e5c'>" & FORMAT ( 'Marcos'[Data], "dd/mm/yyyy" ) & " · " &
+          "<span style='font-weight:600;color:" & _cor & "'>" & 'Marcos'[Status] & "</span></div>" &
       "</div>" &
     "</div>",
     "", 'Marcos'[Data], ASC
